@@ -1,0 +1,11 @@
+minishell2 use
+USAGE
+    ./mysh
+
+DESCRIPTION
+use it as a standerd shell
+to exit type exit command in the shell
+
+OPTIONS
+    -h print the usage and quit.
+
