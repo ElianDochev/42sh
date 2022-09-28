@@ -50,6 +50,16 @@ void control_flow(char *args, env_t **env, int *running)
 {
     int index;
 
+    if (args[0] == '\0')
+        return;
+    for (int i = 0; args[i]; i++) {
+        if (args[i] != ' ' && args[i] != '\t') {
+            break;
+        }
+        if (args[i + 1] == '\0') {
+            return;
+        }
+    }
     if ((index = is_there_an_opp(args)) == -1) {
             index = get_command(args);
             index == 0 ? *running = 0 : fnc_arr[index - 1](args, env);
