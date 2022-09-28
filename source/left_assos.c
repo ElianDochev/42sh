@@ -21,6 +21,7 @@ static void input_redirect(char *args, int *running, env_t **env, int opp)
 
     remove_sep(&file, sep_sp_tab, 0);
     if ((fd_status = open(file, O_RDONLY)) == -1) {
+        add_to_env(env, "STATUS", "1", 1);
         perror("bash: open");
         return;
     }

@@ -29,8 +29,11 @@ void redirect_to_file(char *args, int *running, env_t **env, int overwrite)
 
     remove_sep(&file, sep_sp_tab, 0);
     if ((fd_status = open(file, O_CREAT | O_RDWR |
-    (overwrite == 1 ? O_TRUNC : O_APPEND), 0644)) == -1)
+    (overwrite == 1 ? O_TRUNC : O_APPEND), 0644)) == -1) {
         perror("bash: open");
+        add_to_env(env, "STATUS", "1", 1);
+        return;
+    }
     dup2(fd_status, STDOUT_FILENO);
     close(fd_status);
     control_flow(args, env, running);
