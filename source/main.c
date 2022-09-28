@@ -41,7 +41,7 @@ static env_t *init_env(char **env_old)
         tmp = strtok(env_old[i], "=");
         add_to_env(&env, tmp, strtok(NULL, "="), 0);
     }
-    add_to_env(&env, "Status", "0", 1);
+    add_to_env(&env, "STATUS", "0", 1);
     return env;
 }
 
