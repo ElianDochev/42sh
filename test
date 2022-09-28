@@ -1,7 +1,0 @@
-include
-lib
-Makefile
-mysh
-source
-tests
-usage.txt

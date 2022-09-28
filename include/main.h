@@ -41,6 +41,39 @@ int sep_opps(char ch);
 
 
 /*###########################################################################
+#######################BEGINING OF ENV SEGMENT#########################
+#############################################################################*/
+typedef struct env_s {
+    char *var;
+    char *value;
+    struct env_s *next;
+} env_t;
+
+//returns the ardress of the env, which char*var matches linked list
+//returns NULL if the variable is not found
+env_t *find_var(char *var, env_t *env);
+////////////////////////////////////////////////////////////
+/// \brief adds a new variable to the env or updates the value
+/// if overwtite is not 0
+///
+/// \param env           the address of the env
+/// \param var           the variable name
+/// \param value         the value of the variable
+/// \param overwrite     if 0, the value will not be updated
+///
+/// \return  returns 0 if the variable is added or updated
+///          returns 1 if the variable is not added or updated
+///
+///////////////////////////////////////////////////////////
+int add_to_env(env_t **env, char *var, char *value, int overwrite);
+//removes the variable var from the env linked list
+void remove_from_env(env_t **env, char *var);
+
+/*###########################################################################
+#######################END OF ENV SEGEMENT#############################
+-----------------------------------------------------------------------------*/
+
+/*###########################################################################
 #######################BEGINING OF PIPES_SIGANLS  SEGMENT####################
 #############################################################################*/
 //cathes sigint exits with 137
@@ -61,20 +94,22 @@ void empty_pipe(int *pipefd);
 static const char *dir_bin_default = "ls";
 static const char *dir_bin = "/bin/";
 //functions like pwd bash
-void my_pwd(char *args, char ***env);
+void my_pwd(char *args, env_t **env);
 //functions like cd bash
-void my_cd(char *args, char ***env);
+void my_cd(char *args, env_t **env);
 //executes a binary
-void exec_bin(char *args, char ***env);
+void exec_bin(char *args, env_t **env);
 //fucntions like setenv bash
-void my_setenv(char *args, char ***env);
+void my_setenv(char *args, env_t **env);
 //functions like unsetenv bash
-void my_unsetenv(char *args, char ***env);
+void my_unsetenv(char *args, env_t **env);
 //functions like env bash
-void print_env(char *args, char ***env);
+void print_env(char *args, env_t **env);
+//functions like echo bash
+void echo(char *args, env_t **env);
 static const char *opps[] = {";", ">>", ">", "|", "<<", "<", NULL};
-static void (*fnc_arr[])(char *, char ***) = {&my_cd, &my_pwd, &my_setenv,
-&my_unsetenv, &print_env, &exec_bin};
+static const void (*fnc_arr[])(char *, env_t **) = {&my_cd, &my_pwd, &my_setenv,
+&my_unsetenv, &echo, &exec_bin};
 /*###########################################################################
 #######################END OF COMMAND FUNCS##################################
 -----------------------------------------------------------------------------*/
@@ -89,9 +124,9 @@ int read_input(char *args);
 // retuns of the index of the command that needs to be executed
 int get_command(char *args);
 // this is the main loop of the program
-void input_manager(char **env);
+void input_manager(env_t **env);
 //controls the flow of the program
-void control_flow(char *args, char ***env, int *running);
+void control_flow(char *args, env_t **env, int *running);
 ////////////////////////////////////////////////////////////
 /// \brief crops the args getting rid of the second or the first
 /// arg depending on the opp

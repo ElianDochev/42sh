@@ -15,11 +15,13 @@ SRC	=	source/str_to_word_array.c	\
 		source/exec_binary.c		\
 		source/find_in_word_arr.c	\
 		source/env.c				\
+		source/env_mod.c			\
 		source/left_assos.c			\
 		source/right_assos.c		\
 		source/signa_and_pipes.c	\
 		source/pipe_command.c		\
-		source/parcer.c
+		source/parcer.c				\
+		source/echo.c
 
 SRC_MAIN = source/main.c
 

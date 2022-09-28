@@ -40,13 +40,13 @@ int is_there_an_opp(char *args)
 int get_command(char *args)
 {
     char *commands[] =
-    {"exit", "cd", "pwd", "setenv", "unsetenv", "env", NULL};
+    {"exit", "cd", "pwd", "setenv", "unsetenv", "echo", NULL};
     int index = str_contains(args, commands, sep_sp_tab);
 
     return index;
 }
 
-void control_flow(char *args, char ***env, int *running)
+void control_flow(char *args, env_t **env, int *running)
 {
     int index;
 
@@ -58,19 +58,19 @@ void control_flow(char *args, char ***env, int *running)
         left_assos(args, running, env, index);
 }
 
-void input_manager(char **env)
+void input_manager(env_t **env)
 {
     int running = 1;
     int index;
     char args[KB];
 
-    display_first_line(env);
+    display_first_line(*env);
     while (running)
     {
         if (read_input(args))
             continue;
-        control_flow(args, &env, &running);
+        control_flow(args, env, &running);
         if (running)
-            display_first_line(env);
+            display_first_line(*env);
     }
 }

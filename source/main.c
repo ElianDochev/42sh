@@ -7,27 +7,19 @@
 
 #include "main.h"
 #include <signal.h>
+#include <string.h>
 
 int sig_handler(int sig)
 {
     return 0;
 }
 
-static void malloc_env(char ***env)
-{
-    char **tmp = malloc(sizeof(char *) * (get_len_two_d(*env) + 2));
-
-    for (int i = 0; (*env)[i] != NULL; ++i)
-        tmp[i] = (*env)[i];
-    *env = tmp;
-}
-
-void display_first_line(char **env)
+void display_first_line(env_t *env)
 {
     char buff[KB];
     int offset = 0;
     char *tmp = NULL;
-    char user[KB];
+    char *user;
 
     getcwd(buff, sizeof(buff));
     for (int i = my_strlen(buff); i > 0; --i) {
@@ -36,12 +28,26 @@ void display_first_line(char **env)
         ++offset;
     }
     tmp = buff + (my_strlen(buff) - offset + 1);
-    str_in_word_arr(user, env, "LOGNAME=");
+    user = find_var("USER", env)->value;
     my_printf("[%s %s]$> ", user, tmp);
 }
 
-int main (int ac, char **av, char **env)
+static env_t *init_env(char **env_old)
 {
+    env_t *env = NULL;
+    char *tmp = NULL;
+
+    for (int i = 0; env_old[i] != NULL; ++i) {
+        tmp = strtok(env_old[i], "=");
+        add_to_env(&env, tmp, strtok(NULL, "="), 0);
+    }
+    add_to_env(&env, "Status", "0", 1);
+    return env;
+}
+
+int main (int ac, char **av, char **env_old)
+{
+    env_t *env = NULL;
     if (ac == 2  && str_cmp(av[1], "-h") == 0) {
         print_help("./usage.txt");
         return 0;
@@ -52,7 +58,7 @@ int main (int ac, char **av, char **env)
     }
     signal(SIGINT, sig_handler);
     signal(SIGQUIT, sig_handler);
-    malloc_env(&env);
-    input_manager(env);
+    env = init_env(env_old);
+    input_manager(&env);
     return 0;
 }

@@ -20,7 +20,7 @@ int check_access(char *path)
 }
 
 //functions like pwd
-void my_pwd(char *args, char ***env)
+void my_pwd(char *args, env_t **env)
 {
     char cwd[KB];
 
@@ -28,8 +28,10 @@ void my_pwd(char *args, char ***env)
     my_printf("%s\n", cwd);
 }
 
-static int case_one(char *old, char *tmp)
+static int case_one(char *old)
 {
+    char tmp[512];
+
     if (*old == '\0') {
         error("bash: cd: OLDPWD not set\n");
         return 1;
@@ -41,11 +43,11 @@ static int case_one(char *old, char *tmp)
     return 0;
 }
 
-static void cd_cont(char **args, char **env, char *old)
+static void cd_cont(char **args, env_t *env, char *old)
 {
     char *special[] = {"~", "-", NULL};
     int check = str_contains(args[1], special, sep_sp_tab);
-    char tmp[512];
+    char *tmp;
 
     switch (check) {
     case 2:
@@ -54,22 +56,22 @@ static void cd_cont(char **args, char **env, char *old)
             perror(STD_ERR_MSG);
         break;
     case 1:
-        if (case_one(old, tmp))
+        if (case_one(old))
             return;
         break;
     case 0:
         getcwd(old, 512);
-        str_in_word_arr(tmp, env, "HOME=");
+        tmp = find_var("HOME", env);
         check_access(tmp) == 0 ? chdir(tmp) : 0;
         break;
     }
 }
 
-void my_cd(char *args, char ***env)
+void my_cd(char *args, env_t **env)
 {
     char **arg = split_str(args, sep_sp_tab);
     static char old[512];
-    char tmp[512];
+    char *tmp= NULL;
 
     if (arg[2] != NULL) {
         error("bash: cd: too many arguments");
@@ -77,7 +79,7 @@ void my_cd(char *args, char ***env)
     }
     if (arg[1] == NULL) {
         getcwd(old, 512);
-        str_in_word_arr(tmp, *env, "HOME=");
+        tmp = find_var("HOME", *env);
         check_access(tmp) == 0 ? chdir(tmp) : 0;
         return;
     }

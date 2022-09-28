@@ -12,6 +12,8 @@ static void stage_two(char *scr, int length, char *dest)
 {
     int lenght_scr = my_strlen(scr);
 
+    if (dest == NULL)
+        return;
     for (int i = 0; i + length <= lenght_scr; ++i)
         dest[i] = scr[i + length];
 }

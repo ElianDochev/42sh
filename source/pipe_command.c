@@ -10,7 +10,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-static void child_process(char *args, int *fd_pipe, int *running, char ***env)
+static void child_process(char *args, int *fd_pipe, int *running, env_t **env)
 {
     close(fd_pipe[0]);
     dup2(fd_pipe[1], 1);
@@ -19,7 +19,7 @@ static void child_process(char *args, int *fd_pipe, int *running, char ***env)
     exit(EXIT_SUCCESS);
 }
 
-void pipe_command(char *args, int *running, char ***env)
+void pipe_command(char *args, int *running, env_t **env)
 {
     int fd_pipe[2];
     int fd_tmp;

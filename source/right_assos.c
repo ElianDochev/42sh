@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <sys/wait.h>
 
-void do_another_opp(char *args, int *running, char ***env)
+void do_another_opp(char *args, int *running, env_t **env)
 {
     char *arg = parser(&args, 0, sep_opps);
 
@@ -21,7 +21,7 @@ void do_another_opp(char *args, int *running, char ***env)
     control_flow(args, env, running);
 }
 
-void redirect_to_file(char *args, int *running, char ***env, int overwrite)
+void redirect_to_file(char *args, int *running, env_t **env, int overwrite)
 {
     int fd_status;
     int fd_stdout = dup(STDOUT_FILENO);
@@ -38,7 +38,7 @@ void redirect_to_file(char *args, int *running, char ***env, int overwrite)
     close(fd_stdout);
 }
 
-void right_assos(char *args, int *running, char ***env, int opp)
+void right_assos(char *args, int *running, env_t **env, int opp)
 {
     if (opp == 0)
         return do_another_opp(args, running, env);

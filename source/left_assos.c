@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <sys/wait.h>
 
-static void input_redirect(char *args, int *running, char ***env, int opp)
+static void input_redirect(char *args, int *running, env_t **env, int opp)
 {
     int fd_status;
     int fd_stdin = dup(0);
@@ -31,7 +31,7 @@ static void input_redirect(char *args, int *running, char ***env, int opp)
     close(fd_stdin);
 }
 
-static void second_part(char *args, int fd_tmp, int *running, char ***env)
+static void second_part(char *args, int fd_tmp, int *running, env_t **env)
 {
     int opp;
     int saved_fd = dup(STDIN_FILENO);
@@ -64,7 +64,7 @@ static void child_pros(int *fd_pipe, char *stop)
     exit(EXIT_SUCCESS);
 }
 
-static void here_doc_redirect(char *args, int *running, char ***env, int opp)
+static void here_doc_redirect(char *args, int *running, env_t **env, int opp)
 {
     int fd_pipe[2];
     char *stop = parser(&args, 1, sep_opps);
@@ -85,7 +85,7 @@ static void here_doc_redirect(char *args, int *running, char ***env, int opp)
     }
 }
 
-void left_assos(char *args, int *running, char ***env, int opp)
+void left_assos(char *args, int *running, env_t **env, int opp)
 {
     if (opp == 5)
         input_redirect(args, running, env, opp);

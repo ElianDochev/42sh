@@ -1,82 +1,70 @@
 /*
 ** EPITECH PROJECT, 2022
-** minishell2
+** 42sg
 ** File description:
-** command setenv and unsetenv
+** convetring the char ** to linked list
 */
 
 #include "main.h"
 
-void print_env(char *args, char ***env)
+static env_t *insert_env_var(char *var, char *value)
 {
-    for (int i = 0; (*env)[i] != NULL; i++)
-        my_printf("%s\n", (*env)[i]);
+    env_t *new = malloc(sizeof(env_t));
+
+    new->var = var;
+    new->value = value;
+    new->next = NULL;
+    return (new);
 }
 
-static void add_to_env(char ***env, char *args)
+env_t *find_var(char *var, env_t *env)
 {
-    char **tmp = malloc(sizeof(char *) * (get_len_two_d(*env) + 2));
-
-    for (int i = 0; (*env)[i] != NULL; ++i)
-        tmp[i] = (*env)[i];
-    tmp[get_len_two_d(*env)] = args;
-    tmp[get_len_two_d(*env) + 1] = NULL;
-    free(*env);
-    *env = tmp;
+    for (int i = 0; env != NULL; env = env->next, ++i)
+        if (str_cmp(env->var, var) == 0)
+            return (env);
+    return (NULL);
 }
 
-void my_setenv(char *args, char ***env)
+int add_to_env(env_t **env, char *var, char *value, int overwrite)
 {
-    char **arg = split_str(args, sep_sp_tab);
-    char *tmp = NULL;
-    char *tmp_two = NULL;
-    char tmp_three[64];
+    env_t *tmp = NULL;
 
-    if (arg[1] == NULL || arg[2] == NULL) {
-        error("setenv: Too few arguments.\n");
-        delete_two_d_string(arg);
+    if ((tmp = find_var(var, *env)) != NULL)
+        if (overwrite == 0)
+            return (1);
+        else {
+            tmp->value = value;
+            return (0);
+        }
+    if (*env == NULL) {
+        *env = insert_env_var(var, value);
+        return 0;
+    }
+    tmp = *env;
+    while (tmp->next != NULL)
+        tmp = tmp->next;
+    tmp->next = insert_env_var(var, value);
+    return 0;
+}
+
+void remove_from_env(env_t **env, char *var)
+{
+    env_t *tmp = *env;
+    env_t *prev = NULL;
+
+    while (tmp!= NULL && str_cmp(tmp->var, var) != 0) {
+        prev = tmp;
+        tmp = tmp->next;
+    }
+    if (tmp == NULL)
+        return;
+    if (prev == NULL) {
+        *env = tmp->next;
+        free(tmp);
+        return;
+    } else {
+        prev->next = tmp->next;
+        free(tmp);
         return;
     }
-    tmp = str_join(arg[1], "=");
-    tmp_two = tmp;
-    tmp = str_join(tmp, arg[2]);
-    free(tmp_two);
-    str_in_word_arr(tmp_three, *env, tmp) == 0 ?
-    error("Error var already exists\n") : add_to_env(env, tmp);
-    delete_two_d_string(arg);
-}
-
-static void remove_from_env(char ***env, char *args)
-{
-    char **tmp = malloc(sizeof(char *) * (get_len_two_d(*env)));
-    int i = 0;
-    int offset = 0;
-
-    for (; (*env)[i + offset] != NULL; ++i) {
-        if (str_ncmp((*env)[i], args, my_strlen(args)) != 0) {
-            tmp[i] = (*env)[i + offset];
-        } else
-            ++offset;
-    }
-    tmp[i] = NULL;
-    free(*env);
-    *env = tmp;
-}
-
-void my_unsetenv(char *args, char ***env)
-{
-    char **arg = split_str(args, sep_sp_tab);
-    char tmp_three[64];
-
-    if (arg[1] == NULL) {
-        error("unsetenv: Too few arguments.\n");
-        return;
-    }
-    if (get_len_two_d(arg) > 2) {
-        error("unsetenv: Too many arguments.\n");
-        return;
-    }
-    str_in_word_arr(tmp_three, *env, arg[1]) == 1 ?
-    error("Error var doesn't exist\n") : remove_from_env(env, arg[1]);
-    delete_two_d_string(arg);
 }

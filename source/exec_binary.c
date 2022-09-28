@@ -14,14 +14,14 @@
 #include <sys/wait.h>
 #include <errno.h>
 
-char *get_bin_loc(char **env , char *bin)
+char *get_bin_loc(env_t *env , char *bin)
 {
     char *tmp = malloc(sizeof(char) * 512);
     char **paths = NULL;
 
     null_buffer(tmp, 511);
     bin = str_join("/", bin);
-    str_in_word_arr(tmp, env, "PATH=");
+    copy_str(tmp, find_var("PATH", env)->value);
     if ((paths = split_str_single(tmp, sep_colon)) == NULL)
         return NULL;
     free(tmp);
@@ -37,7 +37,7 @@ char *get_bin_loc(char **env , char *bin)
     return tmp;
 }
 
-int verify(char **args, char **env)
+int verify(char **args, env_t *env)
 {
     char *exceptions[] = {"../", "./", "/", ".", NULL};
     char *bin = args[0];
@@ -54,7 +54,17 @@ int verify(char **args, char **env)
     return 0;
 }
 
-void exec_bin(char *args, char ***env)
+static void record_result(env_t **env)
+{
+    int status = 0;
+
+    wait(&status);
+    if (WIFEXITED(status))
+        status = WEXITSTATUS(status);
+    add_to_env(env, "STATUS", int_to_str(status), 1);
+}
+
+void exec_bin(char *args, env_t **env)
 {
     char **arr = split_str(args, sep_sp_tab);
     char *err = my_strdup(arr[0]);
@@ -62,6 +72,7 @@ void exec_bin(char *args, char ***env)
     if (verify(arr, *env)) {
         error("Command not found\n");
         delete_two_d_string(arr);
+        add_to_env(env, "STATUS", "127", 1);
         return;
     }
     if (!fork()) {
@@ -73,7 +84,7 @@ void exec_bin(char *args, char ***env)
             exit(EXIT_ERR_EPI);
         }
     } else
-        wait(NULL);
+        record_result(env);
     delete_two_d_string(arr);
     free(err);
 }
