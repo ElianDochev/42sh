@@ -64,10 +64,45 @@ static void record_result(env_t **env)
     add_to_env(env, "STATUS", int_to_str(status), 1);
 }
 
+static char **env_to_arr(env)
+{
+    env_t *tmp = env;
+    char **arr = NULL;
+    char *tmp_str = NULL;
+    int i = 0;
+    int j = 0;
+
+    for (; tmp; tmp = tmp->next, j++);
+    arr = malloc(sizeof(char *) * (j + 1));
+    tmp = env;
+    for (; tmp != NULL; tmp = tmp->next) {
+        tmp_str = str_join(tmp->var, "=");
+        arr[i] = str_join(tmp_str, tmp->value);
+        i++;
+        free(tmp_str);
+    }
+    arr[i] = NULL;
+    return arr;
+}
+
+static void child_process(char **arr, env_t *env)
+{
+    char *err = my_strdup(arr[0]);
+    char **envp = env_to_arr(env);
+
+    if (execve(arr[0], arr, envp) == -1) {
+        dup2(STDERR_FILENO, STDOUT_FILENO);
+        my_printf("bash: %s :command not found\n", err);
+        delete_two_d_string(arr);
+        delete_two_d_string(envp);
+        free(err);
+        exit(EXIT_ERR_EPI);
+    }
+}
+
 void exec_bin(char *args, env_t **env)
 {
     char **arr = split_str(args, sep_sp_tab);
-    char *err = my_strdup(arr[0]);
 
     if (verify(arr, *env)) {
         error("Command not found\n");
@@ -75,16 +110,9 @@ void exec_bin(char *args, env_t **env)
         add_to_env(env, "STATUS", "127", 1);
         return;
     }
-    if (!fork()) {
-        if (execve(arr[0], arr, *env) == -1) {
-            dup2(STDERR_FILENO, STDOUT_FILENO);
-            my_printf("bash: %s :command not found\n", err);
-            delete_two_d_string(arr);
-            free(err);
-            exit(EXIT_ERR_EPI);
-        }
-    } else
+    if (!fork())
+        child_process(arr, *env);
+    else
         record_result(env);
     delete_two_d_string(arr);
-    free(err);
 }
