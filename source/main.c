@@ -45,6 +45,18 @@ static env_t *init_env(char **env_old)
     return env;
 }
 
+static void free_env(env_t *env)
+{
+    env_t *tmp = NULL;
+
+    for (; env != NULL; env = tmp) {
+        tmp = env->next;
+        env->malloced & FREE_VAR ? free(env->var) : 0;
+        env->malloced & FREE_VALUE ? free(env->value) : 0;
+        free(env);
+    }
+}
+
 int main (int ac, char **av, char **env_old)
 {
     env_t *env = NULL;
@@ -60,5 +72,6 @@ int main (int ac, char **av, char **env_old)
     signal(SIGQUIT, sig_handler);
     env = init_env(env_old);
     input_manager(&env);
+    free_env(env);
     return 0;
 }
