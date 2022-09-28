@@ -61,7 +61,7 @@ static void record_result(env_t **env)
     wait(&status);
     if (WIFEXITED(status))
         status = WEXITSTATUS(status);
-    add_to_env(env, "STATUS", int_to_str(status), 1);
+    add_to_env(env, "STATUS", int_to_str(status), 3);
 }
 
 static char **env_to_arr(env)
@@ -96,7 +96,7 @@ static void child_process(char **arr, env_t *env)
         delete_two_d_string(arr);
         delete_two_d_string(envp);
         free(err);
-        exit(EXIT_ERR_EPI);
+        exit(errno);
     }
 }
 
