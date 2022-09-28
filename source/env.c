@@ -14,15 +14,22 @@ static env_t *insert_env_var(char *var, char *value)
     new->var = var;
     new->value = value;
     new->next = NULL;
+    new->malloced = 0;
     return (new);
 }
 
-env_t *find_var(char *var, env_t *env)
+static void set_malloc(env_t *env, int overwrite, int call)
 {
-    for (int i = 0; env != NULL; env = env->next, ++i)
-        if (str_cmp(env->var, var) == 0)
-            return (env);
-    return (NULL);
+    if (call > 0) {
+        env->malloced & FREE_VALUE ? free(env->value) : 0;
+        env->malloced & FREE_VALUE ? env->malloced &= ~FREE_VALUE : 0;
+    }
+    if (overwrite - 1 >= 1) {
+        env->malloced |= FREE_VALUE;
+    }
+    if (overwrite - 2 >= 1) {
+        env->malloced |= FREE_VAR;
+    }
 }
 
 int add_to_env(env_t **env, char *var, char *value, int overwrite)
@@ -34,6 +41,7 @@ int add_to_env(env_t **env, char *var, char *value, int overwrite)
             return (1);
         else {
             tmp->value = value;
+            set_malloc(tmp, MIN(overwrite, 2), 1);
             return (0);
         }
     if (*env == NULL) {
@@ -44,7 +52,16 @@ int add_to_env(env_t **env, char *var, char *value, int overwrite)
     while (tmp->next != NULL)
         tmp = tmp->next;
     tmp->next = insert_env_var(var, value);
+    set_malloc(tmp->next, overwrite, 0);
     return 0;
+}
+
+static void handle_mask(env_t *env)
+{
+    if (env->malloced & FREE_VAR)
+        free(env->var);
+    if (env->malloced & FREE_VALUE)
+        free(env->value);
 }
 
 void remove_from_env(env_t **env, char *var)
@@ -60,10 +77,12 @@ void remove_from_env(env_t **env, char *var)
         return;
     if (prev == NULL) {
         *env = tmp->next;
+        handle_mask(tmp);
         free(tmp);
         return;
     } else {
         prev->next = tmp->next;
+        handle_mask(tmp);
         free(tmp);
         return;
     }

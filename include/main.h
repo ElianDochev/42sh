@@ -35,6 +35,8 @@ int sep_alpha(char ch);
 int sep_colon(char ch);
 //return 1 if the char is an opp >, <, >>, <<, |, : otherwise returns 0
 int sep_opps(char ch);
+// same as sep_sp_tab but in reverse (0 for space and tab)
+int sep_sp_tab_rev(char c);
 /*###########################################################################
 #######################END OF SEP FUNCTIONS##################################
 -----------------------------------------------------------------------------*/
@@ -43,9 +45,12 @@ int sep_opps(char ch);
 /*###########################################################################
 #######################BEGINING OF ENV SEGMENT#########################
 #############################################################################*/
+    #define FREE_VAR (1 << 0)
+    #define FREE_VALUE (1 << 1)
 typedef struct env_s {
     char *var;
     char *value;
+    int malloced;
     struct env_s *next;
 } env_t;
 
@@ -60,7 +65,10 @@ env_t *find_var(char *var, env_t *env);
 /// \param var           the variable name
 /// \param value         the value of the variable
 /// \param overwrite     if 0, the value will not be updated
-///
+/// if 1, the value will be updated
+/// if 2, the value will be updated and the new value will be mark as malloced
+/// if 3, the value will be updated and the new value will be mark as malloced
+/// and the var name will be marked as malloced
 /// \return  returns 0 if the variable is added or updated
 ///          returns 1 if the variable is not added or updated
 ///
