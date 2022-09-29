@@ -1,4 +1,4 @@
-minishell2 use
+42sh use
 USAGE
     ./mysh
 
@@ -8,4 +8,3 @@ to exit type exit command in the shell
 
 OPTIONS
     -h print the usage and quit.
-
