@@ -21,14 +21,15 @@ void display_first_line(env_t *env)
     char *tmp = NULL;
     char *user;
 
-    getcwd(buff, sizeof(buff));
+    if (getcwd(buff, sizeof(buff)) == NULL)
+        return;
     for (int i = my_strlen(buff); i > 0; --i) {
         if (buff[i] == '/')
             break;
         ++offset;
     }
     tmp = buff + (my_strlen(buff) - offset + 1);
-    user = find_var("USER", env)->value;
+    user = find_var("USER", env) ? find_var("USER", env)->value : "user";
     my_printf("[%s %s]$> ", user, tmp);
 }
 

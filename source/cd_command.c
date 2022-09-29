@@ -24,26 +24,40 @@ void my_pwd(char *args, env_t **env)
 {
     char cwd[KB];
 
-    getcwd(cwd, sizeof(cwd));
-    my_printf("%s\n", cwd);
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+        my_printf("%s\n", cwd);
+        add_to_env(env, "STATUS", "0", 1);
+    } else {
+        perror("getcwd() error");
+        add_to_env(env, "STATUS", "1", 1);
+    }
 }
 
-static int case_one(char *old)
+static int case_one(char *old, env_t **env)
 {
     char tmp[512];
 
     if (*old == '\0') {
         error("bash: cd: OLDPWD not set\n");
+        add_to_env(env, "STATUS", "1", 1);
         return 1;
     }
     copy_str(tmp, old);
-    getcwd(old, 512);
-    chdir(tmp);
+    if (getcwd(old, 512) == NULL) {
+        error("bash: cd: OLDPWD not set\n");
+        add_to_env(env, "STATUS", "1", 1);
+        return 1;
+    }
+    if (chdir(tmp) == -1) {
+        error("bash: cd: OLDPWD not set\n");
+        add_to_env(env, "STATUS", "1", 1);
+        return 1;
+    }
     my_pwd(NULL, NULL);
     return 0;
 }
 
-static void cd_cont(char **args, env_t *env, char *old)
+static void cd_cont(char **args, env_t **env, char *old)
 {
     char *special[] = {"~", "-", NULL};
     int check = str_contains(args[1], special, sep_sp_tab);
@@ -51,20 +65,20 @@ static void cd_cont(char **args, env_t *env, char *old)
 
     switch (check) {
     case 2:
-        getcwd(old, 512);
-        if (chdir(args[1]) == -1)
+        if (getcwd(old, 512) != NULL || chdir(args[1]) == -1)
             perror(STD_ERR_MSG);
         break;
     case 1:
-        if (case_one(old))
+        if (case_one(old, env))
             return;
         break;
     case 0:
         getcwd(old, 512);
-        tmp = find_var("HOME", env);
-        check_access(tmp) == 0 ? chdir(tmp) : 0;
-        break;
+        tmp = find_var("HOME", *env) ? find_var("HOME", *env)->value : NULL;
+        check_access(tmp) == 0 ? chdir(tmp) : add_to_env(env, "STATUS", "1", 1);
+        return;
     }
+    add_to_env(env, "STATUS", "0", 1);
 }
 
 void my_cd(char *args, env_t **env)
@@ -78,11 +92,15 @@ void my_cd(char *args, env_t **env)
         return;
     }
     if (arg[1] == NULL) {
-        getcwd(old, 512);
+        if (getcwd(old, 512) == NULL) {
+            perror("getcwd() error");
+            return;
+        }
         tmp = find_var("HOME", *env);
-        check_access(tmp) == 0 ? chdir(tmp) : 0;
+        check_access(tmp) == 0 ? chdir(tmp), add_to_env(env, "STATUS", "0", 1)
+        : add_to_env(env, "STATUS", "1", 1);
         return;
     }
-    cd_cont(arg, *env, old);
+    cd_cont(arg, env, old);
     delete_two_d_string(arg);
 }
