@@ -156,9 +156,6 @@ char *parser(char **args, int is_second, int (*sep)(char));
 /*###########################################################################
 ######################BEGINING OF SUPPORT FUNCS##############################
 #############################################################################*/
-//splits a string into an word array ending in null using a callback
-//(return 1 if it is a sep otherwise return 0)
-char **split_str(char *scr, int (*sep)(char));
 //finds if the string is in a word_array return 0 on success
 //and then gives the rest until it reaches the end returns 1 on falier
 int str_in_word_arr(char *dest, char **word_arr, char *sub_arr);

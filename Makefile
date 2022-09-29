@@ -7,8 +7,7 @@
 
 NAME	=	mysh
 
-SRC	=	source/str_to_word_array.c	\
-		source/w_arr.c				\
+SRC	=	source/w_arr.c				\
 		source/cd_command.c			\
 		source/delims.c				\
 		source/input_manager.c		\

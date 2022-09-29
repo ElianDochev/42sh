@@ -81,7 +81,9 @@ void copyn_str(char *dest, char const *src, int n);
 char *my_strndup(char const *src, int n);
 //same as copyn_str but doesnt null terminate the string
 void copy_nexact_str(char *dest, char const *src, int n);
-
+//splits a string into an word array ending in null using a callback
+//(return 1 if it is a sep otherwise return 0)
+char **split_str(char *scr, int (*sep)(char));
 /*###########################################################################
 ######################BEGINING OF HASH TABLE#################################
 #############################################################################*/

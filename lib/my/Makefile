@@ -15,7 +15,8 @@ SCR	=	str_to_int.c	\
 		linked_list.c	\
 		open_file.c		\
 		delete_two_d_string.c	\
-		remove_seps.c
+		remove_seps.c			\
+		split_str.c
 
 OBJ	=	$(SCR:.c=.o)
 
