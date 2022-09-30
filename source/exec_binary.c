@@ -20,7 +20,7 @@ int verify(char **args, env_t *env)
     char *bin = args[0];
     char *dir_bin = get_bin_loc(env, bin);
 
-    if (bin == NULL)
+    if (bin == NULL || dir_bin == NULL)
         return 1;
     if (str_contains(args[0], exceptions, sep_sp_tab) < 4) {
         free(dir_bin);
@@ -64,15 +64,12 @@ static char **env_to_arr(env_t *env)
 
 static void child_process(char **arr, env_t *env)
 {
-    char *err = my_strdup(arr[0]);
     char **envp = env_to_arr(env);
 
     if (execve(arr[0], arr, envp) == -1) {
         dup2(STDERR_FILENO, STDOUT_FILENO);
-        my_printf("bash: %s :command not found\n", err);
         delete_two_d_string(arr);
         delete_two_d_string(envp);
-        free(err);
         exit(errno);
     }
 }
@@ -80,11 +77,14 @@ static void child_process(char **arr, env_t *env)
 void exec_bin(char *args, env_t **env)
 {
     char **arr = split_str(args, sep_sp_tab);
+    int fd_stdout = dup(STDOUT_FILENO);
 
     if (verify(arr, *env)) {
-        error("Command not found\n");
+        dup2(STDERR_FILENO, STDOUT_FILENO);
+        my_printf("bash: %s :command not found\n", arr[0]);
         delete_two_d_string(arr);
         add_to_env(env, "STATUS", "127", 1);
+        dup2(fd_stdout, STDOUT_FILENO);
         return;
     }
     if (!fork())

@@ -5,7 +5,6 @@
 ** right assos opps
 */
 
-#define _GNU_SOURCE
 #include "main.h"
 #include <unistd.h>
 #include <fcntl.h>

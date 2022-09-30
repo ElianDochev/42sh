@@ -75,8 +75,7 @@ void input_manager(env_t **env)
     char args[KB];
 
     display_first_line(*env);
-    while (running)
-    {
+    while (running) {
         if (read_input(args))
             continue;
         control_flow(args, env, &running);

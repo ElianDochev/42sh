@@ -14,8 +14,7 @@ int check_access(char *path)
     if (access(path, X_OK) == -1) {
         perror("access");
         return 1;
-    }
-    else
+    } else
         return 0;
 }
 
