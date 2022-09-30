@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
 static void child_process(char *args, int *fd_pipe, int *running, env_t **env)
 {

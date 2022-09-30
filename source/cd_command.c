@@ -75,7 +75,7 @@ static void cd_cont(char **args, env_t **env, char *old)
     case 0:
         getcwd(old, 512);
         tmp = find_var("HOME", *env) ? find_var("HOME", *env)->value : NULL;
-        check_access(tmp) == 0 ? chdir(tmp) : add_to_env(env, STATUS, ERR_STATUS, 1);
+        check_access(tmp) == 0 ? chdir(tmp) : add_to_env(env, STATUS, "1", 1);
         return;
     }
     add_to_env(env, STATUS, SUCCESS_STATUS, 1);
@@ -85,7 +85,7 @@ void my_cd(char *args, env_t **env)
 {
     char **arg = split_str(args, sep_sp_tab);
     static char old[512];
-    char *tmp= NULL;
+    char *tmp = NULL;
 
     if (arg[1] != NULL && arg[2] != NULL) {
         error("bash: cd: too many arguments");
@@ -97,7 +97,7 @@ void my_cd(char *args, env_t **env)
             return;
         }
         tmp = find_var("HOME", *env)->value;
-        check_access(tmp) == 0 ? chdir(tmp), add_to_env(env, STATUS, SUCCESS_STATUS, 1)
+        check_access(tmp) == 0 ? chdir(tmp), add_to_env(env, STATUS, "0", 1)
         : add_to_env(env, STATUS, ERR_STATUS, 1);
         return;
     }

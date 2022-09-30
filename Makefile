@@ -12,6 +12,7 @@ SRC	=	source/w_arr.c				\
 		source/delims.c				\
 		source/input_manager.c		\
 		source/exec_binary.c		\
+		source/exec_bin_extra.c		\
 		source/find_in_word_arr.c	\
 		source/env.c				\
 		source/env_mod.c			\
@@ -25,7 +26,7 @@ SRC	=	source/w_arr.c				\
 
 SRC_MAIN = source/main.c
 
-CPPFLAGS =  -g3 -Wall -Wextra -I./include
+CPPFLAGS =  -g3 -I./include
 
 OBJ	=	$(SRC:.c=.o)
 

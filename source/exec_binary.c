@@ -14,29 +14,6 @@
 #include <sys/wait.h>
 #include <errno.h>
 
-char *get_bin_loc(env_t *env , char *bin)
-{
-    char *tmp = malloc(sizeof(char) * 512);
-    char **paths = NULL;
-
-    null_buffer(tmp, 511);
-    bin = str_join("/", bin);
-    copy_str(tmp, find_var("PATH", env)->value);
-    if ((paths = split_str_single(tmp, sep_colon)) == NULL)
-        return NULL;
-    free(tmp);
-    for (int i = 0; paths[i]; i++) {
-        tmp = str_join(paths[i], bin);
-        if (access(tmp, X_OK) == 0)
-            break;
-        free(tmp);
-        tmp = NULL;
-    }
-    delete_two_d_string(paths);
-    free(bin);
-    return tmp;
-}
-
 int verify(char **args, env_t *env)
 {
     char *exceptions[] = {"../", "./", "/", ".", NULL};
@@ -61,10 +38,10 @@ static void record_result(env_t **env)
     wait(&status);
     if (WIFEXITED(status))
         status = WEXITSTATUS(status);
-    add_to_env(env, STATUS, int_to_str(status), 2);
+    add_to_env(env, "STATUS", int_to_str(status), 2);
 }
 
-static char **env_to_arr(env)
+static char **env_to_arr(env_t *env)
 {
     env_t *tmp = env;
     char **arr = NULL;
@@ -107,7 +84,7 @@ void exec_bin(char *args, env_t **env)
     if (verify(arr, *env)) {
         error("Command not found\n");
         delete_two_d_string(arr);
-        add_to_env(env, STATUS, "127", 1);
+        add_to_env(env, "STATUS", "127", 1);
         return;
     }
     if (!fork())

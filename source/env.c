@@ -69,7 +69,7 @@ void remove_from_env(env_t **env, char *var)
     env_t *tmp = *env;
     env_t *prev = NULL;
 
-    while (tmp!= NULL && str_cmp(tmp->var, var) != 0) {
+    while (tmp != NULL && str_cmp(tmp->var, var) != 0) {
         prev = tmp;
         tmp = tmp->next;
     }

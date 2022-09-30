@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-int signal_sigint(int sig)
+void signal_sigint(int sig)
 {
     write(2, "\n", 1);
     exit(137);

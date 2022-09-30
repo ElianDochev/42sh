@@ -85,9 +85,11 @@ void remove_from_env(env_t **env, char *var);
 #######################BEGINING OF PIPES_SIGANLS  SEGMENT####################
 #############################################################################*/
 //cathes sigint exits with 137
-int signal_sigint(int sig);
+void signal_sigint(int sig);
 //empties pipe and closes it
 void empty_pipe(int *pipefd);
+//executes the command in the pipe
+void pipe_command(char *args, int *running, env_t **env);
 
 /*###########################################################################
 #######################END OF PIPES_SIGAN SEGEMENT###########################
@@ -123,11 +125,28 @@ static const char *bools[] = {"false", "true"};
 static const char *opps[] = {";", ">>", ">", "&&", "||", "|", "<<", "<", NULL};
 static const void (*fnc_arr[])(char *, env_t **) = {&my_cd, &my_pwd, &my_setenv,
 &my_unsetenv, &echo, &exec_bin};
+// gets the binary path from the env
+char *get_bin_loc(env_t *env , char *bin);
+//calls the function that corresponds right associative opperator
+void right_assos(char *args, int *running, env_t **env, int opp);
+//calls the function that corresponds left associative opperator
+void left_assos(char *args, int *running, env_t **env, int opp);
 /*###########################################################################
 #######################END OF COMMAND FUNCS##################################
 -----------------------------------------------------------------------------*/
 
-
+/*###########################################################################
+#######################BEGINING OF OPPS SEGMENT#########################
+#############################################################################*/
+// performs the logical or opperator
+void or_opp(char *args, int *running, env_t **env);
+// performs the logical and opperator
+void and_opp(char *args, int *running, env_t **env);
+//displays the first thing on the line
+void display_first_line(env_t *env);
+/*###########################################################################
+#######################END OF OPPS SEGEMENT#############################
+-----------------------------------------------------------------------------*/
 
 /*###########################################################################
 ######################BEGINING OF CONTROL FUNCs##############################

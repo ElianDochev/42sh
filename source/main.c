@@ -7,11 +7,12 @@
 
 #include "main.h"
 #include <signal.h>
+#include <unistd.h>
 #include <string.h>
 
-int sig_handler(int sig)
+void sig_handler(int sig)
 {
-    return 0;
+    return;
 }
 
 void display_first_line(env_t *env)
