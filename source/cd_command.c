@@ -9,6 +9,10 @@
 #include <unistd.h>
 #include <stdio.h>
 
+#include "main.h"
+#include <unistd.h>
+#include <stdio.h>
+
 int check_access(char *path)
 {
     if (access(path, X_OK) == -1) {
@@ -64,7 +68,7 @@ static void cd_cont(char **args, env_t **env, char *old)
 
     switch (check) {
     case 2:
-        if (getcwd(old, 512) != NULL || chdir(args[1]) == -1)
+        if (getcwd(old, 512) == NULL || chdir(args[1]) == -1)
             perror(STD_ERR_MSG);
         break;
     case 1:
@@ -87,13 +91,13 @@ void my_cd(char *args, env_t **env)
     char *tmp = NULL;
 
     if (arg[1] != NULL && arg[2] != NULL) {
-        error("bash: cd: too many arguments");
-        return;
+        error("bash: cd: too many arguments\n");
+        return add_to_env(env, STATUS, ERR_STATUS, 1);
     }
     if (arg[1] == NULL) {
         if (getcwd(old, 512) == NULL) {
             perror("getcwd() error");
-            return;
+            return add_to_env(env, STATUS, ERR_STATUS, 1);
         }
         tmp = find_var("HOME", *env)->value;
         check_access(tmp) == 0 ? chdir(tmp), add_to_env(env, STATUS, "0", 1)

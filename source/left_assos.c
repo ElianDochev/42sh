@@ -31,13 +31,14 @@ static void input_redirect(char *args, int *running, env_t **env, int opp)
     close(fd_stdin);
 }
 
-static void second_part(char *args, int fd_tmp, int *running, env_t **env)
+static void second_part(char *args, int *fd_pipe, int *running, env_t **env)
 {
     int opp;
     int saved_fd = dup(STDIN_FILENO);
 
-    dup2(fd_tmp, STDIN_FILENO);
-    close(fd_tmp);
+    close(fd_pipe[1]);
+    dup2(fd_pipe[0], STDIN_FILENO);
+    close(fd_pipe[0]);
     control_flow(args, env, running);
     dup2(saved_fd, STDIN_FILENO);
     close(saved_fd);
@@ -70,7 +71,11 @@ static void here_doc_redirect(char *args, int *running, env_t **env, int opp)
     char *stop = parser(&args, 1, sep_opps);
     int status;
 
-    pipe(fd_pipe);
+    if (pipe(fd_pipe) == -1) {
+        perror("bash: pipe");
+        add_to_env(env, STATUS, ERR_STATUS, 1);
+        return;
+    }
     if (!fork()) {
         child_pros(fd_pipe, stop);
     } else {
@@ -80,9 +85,7 @@ static void here_doc_redirect(char *args, int *running, env_t **env, int opp)
             add_to_env(env, STATUS, ERR_STATUS, 1);
             return;
         }
-        close(fd_pipe[1]);
-        second_part(args, fd_pipe[0], running, env);
-        close(fd_pipe[0]);
+        second_part(args, fd_pipe, running, env);
     }
 }
 
