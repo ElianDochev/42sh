@@ -64,7 +64,7 @@ void control_flow(char *args, env_t **env, int *running)
             index = get_command(args);
             index == 0 ? *running = 0 : fnc_arr[index - 1](args, env);
     } else
-        index <= 3 ? right_assos(args, running, env, index) :
+        index <= INX_LEFT_ASSOS ? right_assos(args, running, env, index) :
         left_assos(args, running, env, index);
 }
 

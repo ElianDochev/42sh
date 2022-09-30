@@ -84,6 +84,10 @@ void copy_nexact_str(char *dest, char const *src, int n);
 //splits a string into an word array ending in null using a callback
 //(return 1 if it is a sep otherwise return 0)
 char **split_str(char *scr, int (*sep)(char));
+
+    #define CHK_FLAG(x, y) (x & y)
+    #define SET_FLAG(x, y) (x |= y)
+    #define UNSET_FLAG(x, y) (x &= ~y)
 /*###########################################################################
 ######################BEGINING OF HASH TABLE#################################
 #############################################################################*/

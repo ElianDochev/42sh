@@ -26,10 +26,10 @@ void my_pwd(char *args, env_t **env)
 
     if (getcwd(cwd, sizeof(cwd)) != NULL) {
         my_printf("%s\n", cwd);
-        add_to_env(env, "STATUS", "0", 1);
+        add_to_env(env, STATUS, SUCCESS_STATUS, 1);
     } else {
         perror("getcwd() error");
-        add_to_env(env, "STATUS", "1", 1);
+        add_to_env(env, STATUS, ERR_STATUS, 1);
     }
 }
 
@@ -39,18 +39,18 @@ static int case_one(char *old, env_t **env)
 
     if (*old == '\0') {
         error("bash: cd: OLDPWD not set\n");
-        add_to_env(env, "STATUS", "1", 1);
+        add_to_env(env, STATUS, ERR_STATUS, 1);
         return 1;
     }
     copy_str(tmp, old);
     if (getcwd(old, 512) == NULL) {
         error("bash: cd: OLDPWD not set\n");
-        add_to_env(env, "STATUS", "1", 1);
+        add_to_env(env, STATUS, ERR_STATUS, 1);
         return 1;
     }
     if (chdir(tmp) == -1) {
         error("bash: cd: OLDPWD not set\n");
-        add_to_env(env, "STATUS", "1", 1);
+        add_to_env(env, STATUS, ERR_STATUS, 1);
         return 1;
     }
     my_pwd(NULL, env);
@@ -75,10 +75,10 @@ static void cd_cont(char **args, env_t **env, char *old)
     case 0:
         getcwd(old, 512);
         tmp = find_var("HOME", *env) ? find_var("HOME", *env)->value : NULL;
-        check_access(tmp) == 0 ? chdir(tmp) : add_to_env(env, "STATUS", "1", 1);
+        check_access(tmp) == 0 ? chdir(tmp) : add_to_env(env, STATUS, ERR_STATUS, 1);
         return;
     }
-    add_to_env(env, "STATUS", "0", 1);
+    add_to_env(env, STATUS, SUCCESS_STATUS, 1);
 }
 
 void my_cd(char *args, env_t **env)
@@ -97,8 +97,8 @@ void my_cd(char *args, env_t **env)
             return;
         }
         tmp = find_var("HOME", *env)->value;
-        check_access(tmp) == 0 ? chdir(tmp), add_to_env(env, "STATUS", "0", 1)
-        : add_to_env(env, "STATUS", "1", 1);
+        check_access(tmp) == 0 ? chdir(tmp), add_to_env(env, STATUS, SUCCESS_STATUS, 1)
+        : add_to_env(env, STATUS, ERR_STATUS, 1);
         return;
     }
     cd_cont(arg, env, old);

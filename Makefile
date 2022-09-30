@@ -20,7 +20,8 @@ SRC	=	source/w_arr.c				\
 		source/signa_and_pipes.c	\
 		source/pipe_command.c		\
 		source/parcer.c				\
-		source/echo.c
+		source/echo.c				\
+		source/logical_opps.c
 
 SRC_MAIN = source/main.c
 

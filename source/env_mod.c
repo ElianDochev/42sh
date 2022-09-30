@@ -37,12 +37,12 @@ void my_setenv(char *args, env_t **env)
         if (var[i] != '=' && var[i + 1] != '\0') {
             continue;
         }
-        add_to_env(env, "STATUS", "1", 1);
+        add_to_env(env, STATUS, ERR_STATUS, 1);
         return;
     }
     value = parser(&var, 1, sep_eq);
     add_to_env(env, my_strdup(var), my_strdup(value), 3);
-    add_to_env(env, "STATUS", "0", 1);
+    add_to_env(env, STATUS, SUCCESS_STATUS, 1);
 }
 
 void my_unsetenv(char *args, env_t **env)
@@ -53,9 +53,9 @@ void my_unsetenv(char *args, env_t **env)
     var = parser(&args, 1, sep_sp_tab_rev);
     parser(&args, 0, sep_sp_tab_rev);
     if (find_var(var, *env) == NULL) {
-        add_to_env(env, "STATUS", "1", 1);
+        add_to_env(env, STATUS, ERR_STATUS, 1);
         return;
     }
     remove_from_env(env, var);
-    add_to_env(env, "STATUS", "0", 1);
+    add_to_env(env, STATUS, SUCCESS_STATUS, 1);
 }

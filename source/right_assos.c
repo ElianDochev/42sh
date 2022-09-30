@@ -31,7 +31,7 @@ void redirect_to_file(char *args, int *running, env_t **env, int overwrite)
     if ((fd_status = open(file, O_CREAT | O_RDWR |
     (overwrite == 1 ? O_TRUNC : O_APPEND), 0644)) == -1) {
         perror("bash: open");
-        add_to_env(env, "STATUS", "1", 1);
+        add_to_env(env, STATUS, ERR_STATUS, 1);
         return;
     }
     dup2(fd_status, STDOUT_FILENO);
@@ -50,5 +50,9 @@ void right_assos(char *args, int *running, env_t **env, int opp)
     if (opp == 2)
         return redirect_to_file(args, running, env, 1);
     if (opp == 3)
+        return and_opp(args, running, env);
+    if (opp == 4)
+        return or_opp(args, running, env);
+    if (opp == 5)
         return pipe_command(args, running, env);
 }

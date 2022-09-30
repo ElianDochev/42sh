@@ -1,3 +1,5 @@
 *.o
 mysh
 *.a
+vgcore*
+source/hello

@@ -21,7 +21,7 @@ static void input_redirect(char *args, int *running, env_t **env, int opp)
 
     remove_sep(&file, sep_sp_tab, 0);
     if ((fd_status = open(file, O_RDONLY)) == -1) {
-        add_to_env(env, "STATUS", "1", 1);
+        add_to_env(env, STATUS, ERR_STATUS, 1);
         perror("bash: open");
         return;
     }
@@ -78,6 +78,7 @@ static void here_doc_redirect(char *args, int *running, env_t **env, int opp)
         wait(&status);
         if ((status = WEXITSTATUS(status)) == 137) {
             empty_pipe(fd_pipe);
+            add_to_env(env, STATUS, ERR_STATUS, 1);
             return;
         }
         close(fd_pipe[1]);
@@ -88,8 +89,8 @@ static void here_doc_redirect(char *args, int *running, env_t **env, int opp)
 
 void left_assos(char *args, int *running, env_t **env, int opp)
 {
-    if (opp == 5)
-        input_redirect(args, running, env, opp);
-    else
+    if (opp == INX_LEFT_ASSOS + 1)
         here_doc_redirect(args, running, env, opp);
+    else
+        input_redirect(args, running, env, opp);
 }

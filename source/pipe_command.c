@@ -16,7 +16,7 @@ static void child_process(char *args, int *fd_pipe, int *running, env_t **env)
     dup2(fd_pipe[1], 1);
     close(fd_pipe[1]);
     control_flow(args, env, running);
-    exit(str_to_int(find_var("STATUS", *env)->value));
+    exit(str_to_int(find_var(STATUS, *env)->value));
 }
 
 static void parent_process(char *args, int *fd_pipe, int *running, env_t **env)
@@ -32,7 +32,7 @@ static void parent_process(char *args, int *fd_pipe, int *running, env_t **env)
     if (WIFEXITED(status)) {
         status = WEXITSTATUS(status);
         if (status != 0)
-            add_to_env(env, "STATUS", int_to_str(status), 2);
+            add_to_env(env, STATUS, int_to_str(status), 2);
         else
             control_flow(args, env, running);
         dup2(fd_tmp, 0);

@@ -43,7 +43,7 @@ int sep_opps(char ch)
 {
     if (ch == '<' || ch == '>')
         return 0;
-    if (ch == '|' || ch == ';')
+    if (ch == '|' || ch == ';' || ch == '&')
         return 0;
     return 1;
 }

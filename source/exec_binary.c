@@ -61,7 +61,7 @@ static void record_result(env_t **env)
     wait(&status);
     if (WIFEXITED(status))
         status = WEXITSTATUS(status);
-    add_to_env(env, "STATUS", int_to_str(status), 3);
+    add_to_env(env, STATUS, int_to_str(status), 2);
 }
 
 static char **env_to_arr(env)
@@ -107,7 +107,7 @@ void exec_bin(char *args, env_t **env)
     if (verify(arr, *env)) {
         error("Command not found\n");
         delete_two_d_string(arr);
-        add_to_env(env, "STATUS", "127", 1);
+        add_to_env(env, STATUS, "127", 1);
         return;
     }
     if (!fork())

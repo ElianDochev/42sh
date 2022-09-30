@@ -99,6 +99,9 @@ void empty_pipe(int *pipefd);
 #############################################################################*/
 //error msg when it cant find theprogram
     #define STD_ERR_MSG "Error has ocurred"
+    #define STATUS "STATUS"
+    #define ERR_STATUS "1"
+    #define SUCCESS_STATUS "0"
 static const char *dir_bin_default = "ls";
 static const char *dir_bin = "/bin/";
 //functions like pwd bash
@@ -115,7 +118,9 @@ void my_unsetenv(char *args, env_t **env);
 void print_env(char *args, env_t **env);
 //functions like echo bash
 void echo(char *args, env_t **env);
-static const char *opps[] = {";", ">>", ">", "|", "<<", "<", NULL};
+    #define INX_LEFT_ASSOS 5
+static const char *bools[] = {"false", "true"};
+static const char *opps[] = {";", ">>", ">", "&&", "||", "|", "<<", "<", NULL};
 static const void (*fnc_arr[])(char *, env_t **) = {&my_cd, &my_pwd, &my_setenv,
 &my_unsetenv, &echo, &exec_bin};
 /*###########################################################################

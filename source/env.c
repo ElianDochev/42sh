@@ -21,14 +21,14 @@ static env_t *insert_env_var(char *var, char *value)
 static void set_malloc(env_t *env, int overwrite, int call)
 {
     if (call > 0) {
-        env->malloced & FREE_VALUE ? free(env->value) : 0;
-        env->malloced & FREE_VALUE ? env->malloced &= ~FREE_VALUE : 0;
+        CHK_FLAG(env->malloced, FREE_VALUE) ? free(env->value),
+        UNSET_FLAG(env->malloced, FREE_VALUE) : 0;
     }
     if (overwrite - 1 >= 1) {
-        env->malloced |= FREE_VALUE;
+        SET_FLAG(env->malloced, FREE_VALUE);
     }
     if (overwrite - 2 >= 1) {
-        env->malloced |= FREE_VAR;
+        SET_FLAG(env->malloced, FREE_VAR);
     }
 }
 
@@ -40,8 +40,8 @@ int add_to_env(env_t **env, char *var, char *value, int overwrite)
         if (overwrite == 0)
             return (1);
         else {
-            tmp->value = value;
             set_malloc(tmp, MIN(overwrite, 2), 1);
+            tmp->value = value;
             return (0);
         }
     if (*env == NULL) {
@@ -58,9 +58,9 @@ int add_to_env(env_t **env, char *var, char *value, int overwrite)
 
 static void handle_mask(env_t *env)
 {
-    if (env->malloced & FREE_VAR)
+    if (CHK_FLAG(env->malloced, FREE_VAR))
         free(env->var);
-    if (env->malloced & FREE_VALUE)
+    if (CHK_FLAG(env->malloced, FREE_VALUE))
         free(env->value);
 }
 
