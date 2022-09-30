@@ -64,7 +64,8 @@ int str_contains(char *scr, char **sub_arrays, int (*sup)(char))
     }
     scr = scr + offset;
     for (int i = 0; i < len_sub_arrs; ++i) {
-        if (str_ncmp(scr, sub_arrays[i], my_strlen(sub_arrays[i])) == 0)
+        if (str_ncmp(scr, sub_arrays[i], my_strlen(sub_arrays[i])) == 0
+        && scr[my_strlen(sub_arrays[i])] == '\0')
             return i;
     }
     return len_sub_arrs;

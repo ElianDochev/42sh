@@ -20,12 +20,12 @@ int verify(char **args, env_t *env)
     char *bin = args[0];
     char *dir_bin = get_bin_loc(env, bin);
 
-    if (bin == NULL || dir_bin == NULL)
-        return 1;
     if (str_contains(args[0], exceptions, sep_sp_tab) < 4) {
         free(dir_bin);
         return 0;
     }
+    if (bin == NULL || dir_bin == NULL)
+        return 1;
     args[0] = dir_bin;
     free(bin);
     return 0;
