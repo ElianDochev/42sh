@@ -50,7 +50,7 @@ int get_len_two_d(char **w_arr)
     return count;
 }
 
-int str_contains(char *scr, char **sub_arrays, int (*sup)(char))
+int str_contains_arg(char *scr, char **sub_arrays, int (*sup)(char))
 {
     int len_sub_arrs = get_len_two_d(sub_arrays);
     int offset = 0;
@@ -67,6 +67,26 @@ int str_contains(char *scr, char **sub_arrays, int (*sup)(char))
         if (str_ncmp(scr, sub_arrays[i], my_strlen(sub_arrays[i])) == 0 &&
         (scr[my_strlen(sub_arrays[i])] == '\0' ||
         sup(scr[my_strlen(sub_arrays[i])])))
+            return i;
+    }
+    return len_sub_arrs;
+}
+
+int str_contains(char *scr, char **sub_arrays, int (*sup)(char))
+{
+    int len_sub_arrs = get_len_two_d(sub_arrays);
+    int offset = 0;
+
+    if (scr == NULL)
+        return -1;
+    for (int i = 0; scr[i]; ++i) {
+        if ((!sup(scr[i])) != 0)
+            break;
+        ++offset;
+    }
+    scr = scr + offset;
+    for (int i = 0; i < len_sub_arrs; ++i) {
+        if (str_ncmp(scr, sub_arrays[i], my_strlen(sub_arrays[i])) == 0)
             return i;
     }
     return len_sub_arrs;

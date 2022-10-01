@@ -21,6 +21,7 @@ SRC	=	source/w_arr.c				\
 		source/signa_and_pipes.c	\
 		source/pipe_command.c		\
 		source/parcer.c				\
+		source/mod_parce.c			\
 		source/echo.c				\
 		source/logical_opps.c
 

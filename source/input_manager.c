@@ -31,7 +31,7 @@ int read_input(char *args)
 
 int is_there_an_opp(char *args)
 {
-    int index;
+    int index = -1;
 
     index = str_contains(args, opps, sep_opps);
     return index != get_len_two_d(opps) ? index : -1;
@@ -41,7 +41,7 @@ int get_command(char *args)
 {
     char *commands[] =
     {"exit", "cd", "pwd", "setenv", "unsetenv", "echo", NULL};
-    int index = str_contains(args, commands, sep_sp_tab);
+    int index = str_contains_arg(args, commands, sep_sp_tab);
 
     return index;
 }
@@ -60,6 +60,7 @@ void control_flow(char *args, env_t **env, int *running)
             return;
         }
     }
+    //ridirects are fucked up
     if ((index = is_there_an_opp(args)) == -1) {
             index = get_command(args);
             index == 0 ? *running = 0 : fnc_arr[index - 1](args, env);

@@ -171,6 +171,10 @@ void control_flow(char *args, env_t **env, int *running);
 ///
 ///////////////////////////////////////////////////////////
 char *parser(char **args, int is_second, int (*sep)(char));
+// if you want to run the program dont remove this
+// prety much the same str_contains but with some extra stuff
+// so the code can run (black magic)
+int str_contains_arg(char *scr, char **sub_arrays, int (*sup)(char));
 /*###########################################################################
 #######################END OF CONTROL FUNCs##################################
 -----------------------------------------------------------------------------*/

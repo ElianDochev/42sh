@@ -12,14 +12,14 @@
 #include <stdio.h>
 #include <sys/wait.h>
 
-static void input_redirect(char *args, int *running, env_t **env, int opp)
+static void input_redirect(char *args, char *arg_two,
+int *running, env_t **env)
 {
     int fd_status;
     int fd_stdin = dup(0);
-    char *file = parser(&args, 1, sep_opps);
 
-    remove_sep(&file, sep_sp_tab, 0);
-    if ((fd_status = open(file, O_RDONLY)) == -1) {
+    my_printf("taken %s, rest %s\n", arg_two, args);
+    if ((fd_status = open(arg_two, O_RDONLY)) == -1) {
         add_to_env(env, STATUS, ERR_STATUS, 1);
         perror("bash: open");
         return;
@@ -31,7 +31,8 @@ static void input_redirect(char *args, int *running, env_t **env, int opp)
     close(fd_stdin);
 }
 
-static void second_part(char *args, int *fd_pipe, int *running, env_t **env)
+static void second_part(char *args, int *fd_pipe,
+int *running, env_t **env)
 {
     int opp;
     int saved_fd = dup(STDIN_FILENO);
@@ -65,10 +66,10 @@ static void child_pros(int *fd_pipe, char *stop)
     exit(EXIT_SUCCESS);
 }
 
-static void here_doc_redirect(char *args, int *running, env_t **env, int opp)
+static void here_doc_redirect(char *args, char *arg_two,
+int *running, env_t **env)
 {
     int fd_pipe[2];
-    char *stop = parser(&args, 1, sep_opps);
     int status;
 
     if (pipe(fd_pipe) == -1) {
@@ -77,7 +78,7 @@ static void here_doc_redirect(char *args, int *running, env_t **env, int opp)
         return;
     }
     if (!fork()) {
-        child_pros(fd_pipe, stop);
+        child_pros(fd_pipe, arg_two);
     } else {
         wait(&status);
         if ((status = WEXITSTATUS(status)) == 137) {
@@ -91,8 +92,12 @@ static void here_doc_redirect(char *args, int *running, env_t **env, int opp)
 
 void left_assos(char *args, int *running, env_t **env, int opp)
 {
+    char *arg_two = mod_parcer(&args);
+
+    remove_sep(&arg_two, sep_sp_tab, 0);
+    remove_sep(&args, sep_sp_tab, 0);
     if (opp == INX_LEFT_ASSOS + 1)
-        here_doc_redirect(args, running, env, opp);
+        here_doc_redirect(args, arg_two, running, env);
     else
-        input_redirect(args, running, env, opp);
+        input_redirect(args, arg_two, running, env);
 }
